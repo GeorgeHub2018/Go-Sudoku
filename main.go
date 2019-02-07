@@ -10,24 +10,24 @@ import (
 var sudoku Sudoku
 
 func init() {
-	var ir [9][9]int
-	var vr [9][9][9]bool
-	var or [9][9]int
+	var input [9][9]int
+	var variants [9][9][9]bool
+	var output [9][9]int
 	sudoku = Sudoku{
-		input:    ir,
-		variants: vr,
-		output:   or,
+		input:    input,
+		variants: variants,
+		output:   output,
 	}
 }
 
 func fromFile() {
 	fmt.Println("Select sudoku file:")
-	fmt.Println("(1) easy")
-	fmt.Println("(2) normal")
-	fmt.Println("(3) hard")
-	fmt.Println("(4) veryhard")
-	fmt.Println("(5) minimum")
-	fmt.Println("(6) other")
+	fmt.Println("(1) easy.txt")
+	fmt.Println("(2) normal.txt")
+	fmt.Println("(3) hard.txt")
+	fmt.Println("(4) veryhard.txt")
+	fmt.Println("(5) minimum.txt")
+	fmt.Println("(6) other file")
 
 	reader := bufio.NewReader(os.Stdin)
 	text, _ := reader.ReadString('\n')
@@ -70,10 +70,10 @@ func fromFile() {
 				sudoku.LoadFromFile(str)
 				sudoku.Resolve()
 			} else if os.IsNotExist(err) {
-				fmt.Println("ERROR: file", str, "not exists")
+				sudoku.PrintError("file", str, "not exists")
 				break
 			} else {
-				fmt.Println("ERROR:", err)
+				sudoku.PrintError(err)
 				break
 			}
 		}
@@ -83,11 +83,11 @@ func fromFile() {
 }
 
 func fromTerminal() {
+	// input
 	reader := bufio.NewReader(os.Stdin)
 	for i := 0; i < 9; i++ {
 		fmt.Println("Input nine numbers [0, 9] (line ", i, ")")
 		text, _ := reader.ReadString('\n')
-
 		for j := 0; j < 9; j++ {
 			r := int(text[j] - '0')
 			if r == 240 {
@@ -99,12 +99,16 @@ func fromTerminal() {
 			sudoku.input[i][j] = r
 		}
 	}
-	sudoku.SaveToFile(tempFileName(appDir()+"/temp/", ".txt"))
+	// save
+	sudoku.SaveToFile(randomFileName(appDir()+"/temp/", ".txt"))
+	// resolve
 	sudoku.Resolve()
 }
 
 func fromExample() {
+	// load
 	sudoku.LoadFromInput(example)
+	// resolve
 	sudoku.Resolve()
 }
 
@@ -131,6 +135,6 @@ func main() {
 			fromExample()
 		}
 	default:
-		fmt.Println("Wrong type " + text)
+		sudoku.PrintError("Wrong type " + text)
 	}
 }

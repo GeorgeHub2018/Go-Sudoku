@@ -24,7 +24,7 @@ func writeStringToFile(filepath, s string) error {
 	return nil
 }
 
-func tempFileName(prefix, suffix string) string {
+func randomFileName(prefix, suffix string) string {
 	randBytes := make([]byte, 16)
 	rand.Read(randBytes)
 	return filepath.Join(prefix + hex.EncodeToString(randBytes) + suffix)

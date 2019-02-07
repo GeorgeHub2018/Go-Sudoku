@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -14,21 +13,6 @@ type (
 		output   [9][9]int
 	}
 )
-
-// PrintInput Sudoku
-func (s *Sudoku) PrintInput() {
-	fmt.Println("Input ", s.input)
-}
-
-// PrintOutput Sudoku
-func (s *Sudoku) PrintOutput() {
-	fmt.Println("Output", s.output)
-}
-
-// PrintOutputVariants Sudoku
-func (s *Sudoku) PrintOutputVariants() {
-	fmt.Println("Variants", s.variants)
-}
 
 // LoadFromFile Sudoku
 func (s *Sudoku) LoadFromFile(filename string) {
@@ -79,8 +63,7 @@ func (s *Sudoku) SaveToFile(filename string) {
 		//f.WriteString(str)
 	}
 	writeStringToFile(filename, str)
-	fmt.Println("INFO: file saved", filename)
-	//s.PrintInput()
+	s.PrintInfo("file saved", filename)
 }
 
 //Clone Sudoku
@@ -88,21 +71,21 @@ func (s *Sudoku) Clone() Sudoku {
 	var ir [9][9]int
 	var vr [9][9][9]bool
 	var or [9][9]int
-	su := Sudoku{
+	clone := Sudoku{
 		input:    ir,
 		variants: vr,
 		output:   or,
 	}
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
-			su.input[i][j] = s.input[i][j]
-			su.output[i][j] = s.output[i][j]
+			clone.input[i][j] = s.input[i][j]
+			clone.output[i][j] = s.output[i][j]
 			for k := 0; k < 9; k++ {
-				su.variants[i][j][k] = s.variants[i][j][k]
+				clone.variants[i][j][k] = s.variants[i][j][k]
 			}
 		}
 	}
-	return su
+	return clone
 }
 
 //CellNum Sudoku
@@ -138,8 +121,8 @@ func (s *Sudoku) VariantsCount() int {
 	return count
 }
 
-//MakeOutput Sudoku
-func (s *Sudoku) MakeOutput() {
+//InitOutput Sudoku
+func (s *Sudoku) InitOutput() {
 	s.ClearOutput()
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
@@ -174,146 +157,15 @@ func (s *Sudoku) InitVariants() {
 	}
 }
 
-//ProcRow Sudoku
-func (s *Sudoku) ProcRow(j int) {
-	// proc by num
-	for i := 0; i < 9; i++ {
-		cellNum := s.CellNum(i, j)
-		if cellNum > 0 {
-			for ii := 0; ii < 9; ii++ {
-				if i == ii {
-					continue
-				}
-				s.variants[ii][j][cellNum-1] = false
-			}
-		}
-	}
-	// proc by empty
-	for num := 1; num <= 9; num++ {
-		numCount := 0
-		lastNumIndex := 0
-		for i := 0; i < 9; i++ {
-			if s.variants[i][j][num-1] == true {
-				numCount++
-				lastNumIndex = i
-			}
-		}
-		if numCount == 1 {
-			for k := 0; k < 9; k++ {
-				if k == num-1 {
-					continue
-				}
-				s.variants[lastNumIndex][j][k] = false
-			}
-		}
-	}
-}
-
-//ProcRows Sudoku
-func (s *Sudoku) ProcRows() {
-	for j := 0; j < 9; j++ {
-		s.ProcRow(j)
-	}
-}
-
-//ProcCol Sudoku
-func (s *Sudoku) ProcCol(i int) {
-	// proc by num
-	for j := 0; j < 9; j++ {
-		cellNum := s.CellNum(i, j)
-		if cellNum > 0 {
-			for jj := 0; jj < 9; jj++ {
-				if j == jj {
-					continue
-				}
-				s.variants[i][jj][cellNum-1] = false
-			}
-		}
-	}
-	// proc by empty
-	for num := 1; num <= 9; num++ {
-		numCount := 0
-		lastNumIndex := 0
-		for j := 0; j < 9; j++ {
-			if s.variants[i][j][num-1] == true {
-				numCount++
-				lastNumIndex = j
-			}
-		}
-		if numCount == 1 {
-			for k := 0; k < 9; k++ {
-				if k == num-1 {
-					continue
-				}
-				s.variants[i][lastNumIndex][k] = false
-			}
-		}
-	}
-}
-
-//ProcCols Sudoku
-func (s *Sudoku) ProcCols() {
-	for i := 0; i < 9; i++ {
-		s.ProcCol(i)
-	}
-}
-
-//ProcBlock Sudoku
-func (s *Sudoku) ProcBlock(startI, startJ int) {
-	for i := startI; i < startI+3; i++ {
-		for j := startJ; j < startJ+3; j++ {
-			cellNum := s.CellNum(i, j)
-			if cellNum > 0 {
-				for ii := startI; ii < startI+3; ii++ {
-					for jj := startJ; jj < startJ+3; jj++ {
-						if (i == ii) && (j == jj) {
-							continue
-						}
-						s.variants[ii][jj][cellNum-1] = false
-					}
-				}
-			}
-		}
-	}
-
-	// proc by empty
-	for num := 1; num <= 9; num++ {
-		numCount := 0
-		lastCol := 0
-		lastRow := 0
-		for i := startI; i < startI+3; i++ {
-			for j := startJ; j < startJ+3; j++ {
-				if s.variants[i][j][num-1] == true {
-					numCount++
-					lastCol = i
-					lastRow = j
-				}
-			}
-		}
-		if numCount == 1 {
-			for k := 0; k < 9; k++ {
-				if k == num-1 {
-					continue
-				}
-				s.variants[lastCol][lastRow][k] = false
-			}
-		}
-	}
-}
-
-//ProcBlocks Sudoku
-func (s *Sudoku) ProcBlocks() {
-	for i := 0; i < 9; i = i + 3 {
-		for j := 0; j < 9; j = j + 3 {
-			s.ProcBlock(i, j)
-		}
-	}
-}
-
 // Resolve Sudoku
 func (s *Sudoku) Resolve() {
+	s.PrintInput()
+	if !s.PrintIsInputCorrect() {
+		return
+	}
+
 	s.InitVariants()
-	fmt.Println("INFO: hard level=", s.VariantsCount())
+	s.PrintHardLevel()
 	lastCount := 0
 	repeatCount := 0
 	for {
@@ -322,7 +174,7 @@ func (s *Sudoku) Resolve() {
 		s.ProcBlocks()
 		count := s.VariantsCount()
 		if count == 9*9 {
-			fmt.Println("INFO: Resolved")
+			s.PrintInfo("Resolved")
 			break
 		}
 		if count == lastCount {
@@ -331,15 +183,14 @@ func (s *Sudoku) Resolve() {
 			repeatCount = 0
 		}
 		if repeatCount >= 9 {
-			fmt.Println("WARNING: Repeat limit")
+			s.PrintWarning("Not resolved")
 			break
 		}
 		lastCount = count
 	}
-	s.MakeOutput()
-	s.PrintInput()
-	//s.PrintOutputVariants()
+	s.InitOutput()
 	s.PrintOutput()
+	s.PrintIsOutputCorrect()
 }
 
 //ClearInput Sudoku
