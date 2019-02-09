@@ -88,6 +88,20 @@ func (s *Sudoku) Clone() Sudoku {
 	return clone
 }
 
+//Assign Sudoku
+func (s *Sudoku) Assign(source Sudoku) {
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			s.input[i][j] = source.input[i][j]
+			s.output[i][j] = source.output[i][j]
+			for k := 0; k < 9; k++ {
+				s.variants[i][j][k] = source.variants[i][j][k]
+			}
+		}
+	}
+	return
+}
+
 //CellNum Sudoku
 func (s *Sudoku) CellNum(i, j int) int {
 	lastTrueIndex := 0
@@ -157,15 +171,8 @@ func (s *Sudoku) InitVariants() {
 	}
 }
 
-// Resolve Sudoku
-func (s *Sudoku) Resolve() {
-	s.PrintInput()
-	if !s.PrintIsInputCorrect() {
-		return
-	}
-
-	s.InitVariants()
-	s.PrintHardLevel()
+//Proc Sudoku
+func (s *Sudoku) Proc() bool {
 	lastCount := 0
 	repeatCount := 0
 	for {
@@ -175,7 +182,7 @@ func (s *Sudoku) Resolve() {
 		count := s.VariantsCount()
 		if count == 9*9 {
 			s.PrintInfo("Resolved")
-			break
+			return true
 		}
 		if count == lastCount {
 			repeatCount++
@@ -188,6 +195,24 @@ func (s *Sudoku) Resolve() {
 		}
 		lastCount = count
 	}
+	/*if s.ProcLocks() == true {
+		return true
+	}*/
+	return false
+}
+
+// Resolve Sudoku
+func (s *Sudoku) Resolve() {
+	s.PrintInput()
+	if !s.PrintIsInputCorrect() {
+		return
+	}
+
+	s.InitVariants()
+	s.PrintHardLevel()
+
+	s.Proc()
+
 	s.InitOutput()
 	s.PrintOutput()
 	s.PrintIsOutputCorrect()

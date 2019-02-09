@@ -11,6 +11,8 @@ import (
 )
 
 func writeStringToFile(filepath, s string) error {
+	makeDir(filepath)
+
 	fo, err := os.Create(filepath)
 	if err != nil {
 		return err
@@ -36,4 +38,10 @@ func appDir() string {
 		log.Fatal(err)
 	}
 	return dir
+}
+
+func makeDir(path string) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		_ = os.Mkdir(path, os.ModePerm)
+	}
 }
