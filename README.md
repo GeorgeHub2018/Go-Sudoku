@@ -1,6 +1,6 @@
 # Go Sudoku Solver
 
-![Image of gopher(https://github.com/GeorgeHub2018/Go-Sudoku/images/gopher.png)
+![Image of gopher(https://github.com/GeorgeHub2018/Go-Sudoku/images/gopher.jpg)
 
 **Go Sudoku** is small program written in **Golang** which can resolve sudoku.
 
@@ -37,7 +37,7 @@ or
 900000602
 ```
 
-##How it works?
+## How it works?
 
 The algorithm of the program solves sudoku as well as a human would.
 The program creates a matrix of possible values that are possible for each element and using the rules of non-repetition horizontally, vertically, and in a 3x3 square, by the elimination method, learn the necessary values. 
