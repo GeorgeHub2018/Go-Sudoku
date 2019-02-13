@@ -1,6 +1,6 @@
 # Go Sudoku Solver
 
-![Image of gopher](https://raw.githubusercontent.com/GeorgeHub2018/Go-Sudoku/master/images/gopher.jpg)
+![Image of gopher](https://raw.githubusercontent.com/GeorgeHub2018/Go-Sudoku/master/images/gopher.png)
 
 **Go Sudoku** is small program written in **Golang** which can resolve sudoku.
 
